@@ -1,0 +1,24 @@
+[all:vars]
+http_proxy=http://192.168.134.4:3128
+https_proxy=http://192.168.134.4:3128
+
+[nodeall]
+pgpool1-cluster-dev.finnet.local
+pgpool2-cluster-dev.finnet.local
+jepara-postgree-dev.finnet.local   conf_node=pgbackend1
+jepara2-postgree-dev.finnet.local  conf_node=pgbackend2
+jepara3-postgree-dev.finnet.local  conf_node=pgbackend3
+
+[nodedb]
+jepara   conf_node=pgbackend1
+jepara2-postgree-dev.finnet.local  conf_node=pgbackend2
+jepara3-postgree-dev.finnet.local  conf_node=pgbackend3
+
+[node1]
+jepara-postgree-dev.finnet.local   conf_node=pgbackend1
+
+[node2]
+jepara2-postgree-dev.finnet.local  conf_node=pgbackend2
+
+[node3]
+jepara3-postgree-dev.finnet.local  conf_node=pgbackend3

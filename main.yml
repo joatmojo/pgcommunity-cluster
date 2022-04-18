@@ -1,0 +1,9 @@
+---
+- hosts: nodeall
+  any_errors_fatal: true
+  vars:
+    proxy_env:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+  roles:
+  - role: common
