@@ -10,7 +10,7 @@ jepara2-postgree-dev.finnet.local  conf_node=pgbackend2
 jepara3-postgree-dev.finnet.local  conf_node=pgbackend3
 
 [nodedb]
-jepara   conf_node=pgbackend1
+jepara-postgree-dev.finnet.local   conf_node=pgbackend1
 jepara2-postgree-dev.finnet.local  conf_node=pgbackend2
 jepara3-postgree-dev.finnet.local  conf_node=pgbackend3
 
