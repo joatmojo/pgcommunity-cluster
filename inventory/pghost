@@ -1,6 +1,6 @@
 [all:vars]
-http_proxy=http://192.168.134.4:3128
-https_proxy=http://192.168.134.4:3128
+http_proxy=http://192.168.131.254:3128
+https_proxy=http://192.168.131.254:3128
 
 [nodeall]
 pgpool1-cluster-dev.finnet.local
