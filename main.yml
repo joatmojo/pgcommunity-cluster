@@ -1,9 +1,44 @@
 ---
 - hosts: nodeall
   any_errors_fatal: true
+  become: yes
   vars:
     proxy_env:
       http_proxy: "{{ http_proxy }}"
       https_proxy: "{{ https_proxy }}"
   roles:
   - role: common
+  environment: "{{ proxy_env }}"
+
+- hosts: nodedb
+  any_errors_fatal: true
+  become: yes
+  vars:
+    proxy_env:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+  roles:
+  - role: backend
+  environment: "{{ proxy_env }}"  
+
+- hosts: masternode
+  any_errors_fatal: true
+  become: yes
+  roles:
+  - role: repconf-master
+
+- hosts: standbynode
+  any_errors_fatal: true
+  become: yes
+  roles:
+  - role: repconf-slave
+
+- hosts: nodepool
+  any_errors_fatal: true
+  become: yes
+  vars:
+    proxy_env:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+  roles:
+  - role: pgpool-install

@@ -1,0 +1,32 @@
+---
+# tasks file for repconf-slave
+- name: stop existing postgresql instance 
+  service:
+    name: postgresql
+    state: stopped
+
+- name: delete existing data directory
+  file:
+    path: /data/postgresql/14/main
+    state: absent
+
+- name: Start Clone for standby  node
+  command: /usr/bin/repmgr -h jepara-postgree-dev.finnet.local -U repmgr -d repmgr -f /etc/repmgr/repmgr.conf standby clone
+  become_user: postgres
+
+- name: start standby postgresql instance 
+  service:
+    name: postgresql
+    state: started  
+
+- name: Register standby node to the cluster
+  command: /usr/bin/repmgr -f /etc/repmgr/repmgr.conf standby register
+  become_user: postgres
+
+- name: Check Nodes
+  command: /usr/bin/repmgr -f /etc/repmgr/repmgr.conf cluster show
+  become_user: postgres
+  register: slavenodes
+
+- debug:
+    var: slavenodes.stdout_lines

@@ -1,0 +1,99 @@
+---
+- name: Check if repmgr database already created
+  become_user: postgres
+  shell: psql postgres -tAc "SELECT 1 FROM pg_database WHERE datname='repmgr'";
+  register: pg_db_exists
+
+- name: Check if repmgr user already created
+  become_user: postgres
+  shell: psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='repmgr'";
+  register: pg_user_exists
+
+- name: Check if database already created
+  stat:
+    path: /data/postgresql/14/main
+  register: pg_backend_exists  
+
+- name: Create repmgr user
+  become_user: postgres
+  shell: createuser -s repmgr
+  when: pg_user_exists.stdout == ""
+
+- name: Create repmgr database and owning to repmgr
+  become_user: postgres
+  shell: createdb repmgr -O repmgr
+  when: pg_db_exists.stdout == ""
+
+- name: Create repmgr searchpath
+  become_user: postgres
+  shell: psql postgres -tAc 'ALTER USER repmgr SET search_path TO repmgr, "$user", public;';
+  when: pg_user_exists.stdout == ""
+
+- name: Create HC pgpool user
+  become_user: postgres
+  shell: createuser -s hcuser
+  when: pg_user_exists.stdout == ""
+
+- name: Create hcdb database and owning to hcuser
+  become_user: postgres
+  shell: createdb hcdb -O hcuser
+  when: pg_db_exists.stdout == ""
+
+- name: Shutdown PostgreSQL service
+  service:
+    name: postgresql
+    state: stopped
+  when: not pg_backend_exists.stat.exists
+
+- name: Copy new parameter file
+  template:
+    src: postgresql.conf.j2
+    dest: /etc/postgresql/14/main/postgresql.conf
+    owner: postgres
+    group: postgres
+    mode: 0644
+  when: not pg_backend_exists.stat.exists
+
+- name: Copy new pg_hba file
+  template:
+    src: pg_hba.conf.j2
+    dest: /etc/postgresql/14/main/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: 0640
+  when: not pg_backend_exists.stat.exists
+
+- name: Copy new replication file config
+  template:
+    src: postgresql.replication.conf.j2
+    dest: /etc/postgresql/14/main/conf.d/postgresql.replication.conf
+    owner: postgres
+    group: postgres
+    mode: 0644
+  when: not pg_backend_exists.stat.exists
+
+- name: Rsync data dir to new data dir location
+  shell: rsync -av /var/lib/postgresql /data/
+  when: not pg_backend_exists.stat.exists
+
+- name: Change ownership
+  file:
+    dest: /data/postgresql
+    owner: postgres
+    group: postgres
+    mode: 0700
+    recurse: yes
+  when: not pg_backend_exists.stat.exists
+
+- name: Move old data dir
+  command: mv /var/lib/postgresql/14/main /var/lib/postgresql/14/main.bak
+  when: not pg_backend_exists.stat.exists
+
+- name: Start service postgresql
+  service:
+    name: postgresql
+    state: started
+  when: not pg_backend_exists.stat.exists
+
+
+  

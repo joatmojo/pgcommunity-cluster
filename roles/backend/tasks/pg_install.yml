@@ -1,0 +1,20 @@
+---
+- name: Check if database already created
+  stat:
+    path: /data/postgresql/14/main
+  register: pg_backend_exists
+
+- name: Check if repmgr already created
+  stat:
+    path: /usr/bin/repmgr
+  register: pg_repmgr_exists
+
+- name: Install postgresql 14
+  apt:
+    name: postgresql-14
+  when: not pg_backend_exists.stat.exists    
+
+- name: Install repmgr 14
+  apt:
+    name: postgresql-14-repmgr
+  when: not pg_repmgr_exists.stat.exists

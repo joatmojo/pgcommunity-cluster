@@ -1,0 +1,23 @@
+---
+- name: Check if repmgr config folder already created
+  stat:
+    path: /etc/repmgr
+  register: pg_repmgr_exists  
+
+- name: Creates directory repmgr
+  file:
+    path: /etc/repmgr
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0775
+  when: not pg_repmgr_exists.stat.exists
+
+- name: Add repmgr.conf to each node
+  template:
+    src: repmgr.conf.j2
+    dest: /etc/repmgr/repmgr.conf
+    owner: postgres
+    group: postgres
+    mode: 0644
+

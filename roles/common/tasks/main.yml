@@ -2,10 +2,13 @@
 - name: Run the equivalent of "apt-get update" as a separate step
   apt:
     update_cache: yes
-  environment: "{{ proxy_env }}"
 
 - name: Update all packages to their latest version
   apt:
     name: "*"
-    state: latest
-  environment: "{{ proxy_env }}"
+    state: latest  
+
+- name: Stop service firewall
+  service:
+    name: ufw
+    state: stopped

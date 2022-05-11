@@ -1,0 +1,16 @@
+{% if conf_node == 'pgbackend1' %}
+node_id=1
+node_name='{{ ansible_nodename }}'
+conninfo='host={{ ansible_nodename }} user=repmgr dbname=repmgr connect_timeout=2'
+data_directory='/data/postgresql/14/main'
+{% elif conf_node == 'pgbackend2' %}
+node_id=2
+node_name='{{ ansible_nodename }}'
+conninfo='host={{ ansible_nodename }} user=repmgr dbname=repmgr connect_timeout=2'
+data_directory='/data/postgresql/14/main'
+{% elif conf_node == 'pgbackend3' %}
+node_id=3
+node_name='{{ ansible_nodename }}'
+conninfo='host={{ ansible_nodename }} user=repmgr dbname=repmgr connect_timeout=2'
+data_directory='/data/postgresql/14/main'
+{% endif %}

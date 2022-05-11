@@ -1,0 +1,13 @@
+---
+# tasks file for repconf-master
+- name: Register Primary node
+  command: /usr/bin/repmgr -f /etc/repmgr/repmgr.conf primary register
+  become_user: postgres
+
+- name: Check Nodes
+  command: /usr/bin/repmgr -f /etc/repmgr/repmgr.conf cluster show
+  become_user: postgres
+  register: masternodes
+    
+- debug:
+    var: masternodes.stdout_lines

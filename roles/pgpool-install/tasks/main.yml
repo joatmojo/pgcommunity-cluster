@@ -1,0 +1,88 @@
+---
+# tasks file for pgpool-install
+- name: install pgpool
+  apt:
+    name: pgpool2
+    state: present
+  environment: "{{ proxy_env }}"
+
+- name: install postgresql client
+  apt:
+    name: postgresql-client
+    state: present
+  environment: "{{ proxy_env }}"  
+
+- name: create /data/pgpool directory if it does not exist
+  file:
+    path: /data/pgpool
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: '0755'  
+
+- name: copy pgpool.conf
+  template: 
+    src: pgpool.conf.j2
+    dest: /etc/pgpool2/pgpool.conf
+    owner: root
+    group: root
+    mode: 0764
+
+- name: copy pcp.conf
+  template: 
+    src: pcp.conf.j2
+    dest: /etc/pgpool2/pcp.conf
+    owner: root
+    group: root
+    mode: 0764        
+
+- name: copy pool_hba.conf
+  template: 
+    src: pool_hba.conf.j2
+    dest: /etc/pgpool2/pool_hba.conf
+    owner: root
+    group: root
+    mode: 0764        
+
+- name: copy pool_passwd
+  template: 
+    src: pool_passwd.j2
+    dest: /etc/pgpool2/pool_passwd
+    owner: root
+    group: root
+    mode: 0644
+
+- name: copy pcppass config
+  template:
+    src: pcppass.j2
+    dest: /data/pgpool/pcppass
+    owner: root
+    group: root
+    mode: 0700
+
+- name: restart pgpool
+  service:
+    name: pgpool2
+    state: restarted
+
+- name: copy attach shell
+  template:
+    src: pgpool_attach.sh.j2
+    dest: /data/pgpool/pgpool_attach.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: attach nodes
+  shell: /data/pgpool/pgpool_attach.sh
+  register: pgpool_attach
+
+- debug:
+    var: pgpool_attach.stdout_lines
+
+- name: PGPool check node status
+  shell: psql -U hcuser -d hcdb -h localhost -p 5433 -c "show pool_nodes"
+  register: pgpool_nodes
+
+- debug:
+    var: pgpool_nodes.stdout_lines

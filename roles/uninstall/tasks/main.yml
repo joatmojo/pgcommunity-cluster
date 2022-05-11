@@ -1,0 +1,17 @@
+---
+# tasks file for uninstall
+- name: remove repmgr config and folder
+  become: yes
+  command: rm -rf /etc/repmgr
+
+- name: remove postgresql data dir
+  become: yes
+  command: rm -rf /data/postgresql
+
+- name: remove postgresql data dir backup
+  become: yes
+  command: rm -rf /var/lib/postgresql
+
+- name: uninstall database software
+  become: yes
+  command: apt-get --purge remove postgresql\*

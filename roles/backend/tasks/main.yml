@@ -1,0 +1,12 @@
+---
+# This step for add repo 
+- include: pg_repository.yml
+
+# This step for install database 
+- include: pg_install.yml
+
+# This step for config database 
+- include: pg_configdb.yml
+
+# This step for config cluster
+- include: pg_configcluster.yml

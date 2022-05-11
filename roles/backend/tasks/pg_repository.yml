@@ -1,0 +1,15 @@
+---
+- name: Add PG 14 repository
+  shell: sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+- name: Import the repository signing key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Import repmgr repository
+  shell: curl https://dl.enterprisedb.com/default/release/get/deb | sudo bash
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
